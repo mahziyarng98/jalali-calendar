@@ -18,7 +18,7 @@ import "JalaliDate.js" as Jalali
 // one identity per slot.
 BarWidget {
   id: root
-  moduleName: "local.jalali-calendar"
+  moduleName: "io.github.mahziyarng98.jalali-calendar"
 
   // Recomputed rather than cached across midnight; SystemClock below is what
   // makes that happen without the panel being opened.

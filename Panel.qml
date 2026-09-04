@@ -18,7 +18,7 @@ import "holidays-fixed.js" as FixedHolidays
 // against.
 Panel {
   id: root
-  moduleName: "local.jalali-calendar"
+  moduleName: "io.github.mahziyarng98.jalali-calendar"
   ipcTarget: "jalali-calendar"
   manageIpc: false
 

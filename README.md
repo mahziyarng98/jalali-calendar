@@ -5,107 +5,162 @@ Shamsi) date in your bar, and a month calendar in the panel behind it. Month
 and weekday names are romanized — `Ordibehesht`, not `اردیبهشت` — and the
 numerals are Latin throughout.
 
-```
-                      13 Shahrivar          ← the bar
-
-        ┌─────────────────────────────────┐
-        │     Jome, 13 Shahrivar 1405     │
-        │  ‹        Shahrivar 1405      › │
-        │            [ Today ]            │
-        │   Sh  Ye  Do  Se  Ch  Pa  Jo    │
-        │   31   1   2   3   4   5   6    │
-        │    7   8   9  10  11  12 (13)   │  ← today: a thin accent ring
-        │   14  15  16  17  18  19  20    │
-        │   21  22  23  24  25  26  27    │
-        │   28  29  30  31   1   2   3    │
-        │    4   5   6   7   8   9  10    │
-        │ 13 Shahrivar 1405 = 4 Sep 2026  │
-        └─────────────────────────────────┘
-```
+![The Jalali Calendar panel](preview.png)
 
 ## Features
 
-- **Bar label** — day number and Finglish month, e.g. `13 Shahrivar`. Rolls
+- **Bar widget** — day number and Finglish month, e.g. `13 Shahrivar`. Rolls
   over at local midnight on its own.
-- **Month grid** on the Iranian week, Shanbe (Saturday) first, always six rows
-  so the panel never changes height as you step through months.
+- **Panel** — a month grid behind one click, with the full date in Finglish
+  above it: `Jome, 13 Shahrivar 1405`.
+- **Saturday-first grid** on the Iranian week — `Shanbe, Yekshanbe, Doshanbe,
+  Seshanbe, Chaharshanbe, Panjshanbe, Jome` — always six rows, so the panel
+  never changes height as you step through months.
+- **Finglish throughout.** Persian month, weekday and holiday names in Latin
+  script, with Western numerals.
 - **Official Iranian holidays** in red with a dot under the number, so they
-  still read as holidays on a theme whose palette has no real red.
+  still read as holidays on a theme whose palette has no real red. The ten
+  fixed solar holidays ship complete; lunar ones are a data file you fill in
+  (see [Holidays](#holidays)).
 - **Gregorian equivalent** of whatever day you point at, on a steady line
   under the grid — `18 Shahrivar 1405 = 9 September 2026`.
+- **Keyboard navigation** with a visible day cursor that turns the page at
+  month edges.
+- **Theme-adaptive.** Every colour comes from the active Omarchy theme, so the
+  panel re-skins on `omarchy theme set` with nothing to configure. Verified on
+  both light and dark themes.
 - **Correct leap years.** Esfand is 30 days in a leap year and 29 otherwise,
   and stepping across a Nowruz boundary lands where it should.
-- **Theme-aware.** Every colour comes from the active Omarchy theme, so the
-  panel re-skins on `omarchy theme set` with nothing to configure.
 
 ## Requirements
 
 - Omarchy 4 ("Quattro") or newer — the Quickshell-based `omarchy-shell`.
 
-Nothing else. No network access, no external fonts, no dependencies.
+Built and tested on Omarchy 4.0.2 (Quickshell 0.3.1, Qt 6.11). No network
+access, no external fonts, no dependencies.
 
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/<user>/omarchy-jalali-calendar.git --enable
+omarchy plugin add https://github.com/mahziyarng98/jalali-calendar.git --enable
 ```
 
 Plugins land disabled by default so you can read the code first; `--enable`
-skips that and puts the widget straight into the bar's centre section. Move it
-with `omarchy bar move local.jalali-calendar --section right`.
-
-To install from a local checkout instead:
+skips that and puts the widget into the bar's centre section. Move it with:
 
 ```bash
-omarchy plugin add ~/src/jalali-calendar --enable --yes
+omarchy bar move io.github.mahziyarng98.jalali-calendar --section right
 ```
 
 ## Update
 
 ```bash
-omarchy plugin update local.jalali-calendar   # fast-forwards, showing a diff first
-omarchy plugin update                         # every git-managed plugin
+omarchy plugin update io.github.mahziyarng98.jalali-calendar
 ```
+
+Fetches, shows a diff of the incoming changes, then fast-forwards.
+`omarchy plugin update` with no argument updates every git-managed plugin.
 
 ## Remove
 
 ```bash
-omarchy plugin remove local.jalali-calendar
+omarchy plugin remove io.github.mahziyarng98.jalali-calendar
 ```
 
-`omarchy plugin disable local.jalali-calendar` takes it off the bar without
-uninstalling it.
+To take it off the bar without uninstalling it:
+
+```bash
+omarchy plugin disable io.github.mahziyarng98.jalali-calendar
+```
+
+## Replacing the built-in clock
+
+Installing this plugin **adds** a widget; Omarchy's own Gregorian clock stays
+in the bar alongside it. Two independent settings control what you end up
+with, and you may want either, both, or neither.
+
+Everything below edits `~/.config/omarchy/shell.json` — **your own settings
+file**, not plugin or shell source. That matters: it survives `omarchy update`,
+whereas edits to files under `/usr/share/omarchy/` are overwritten on every
+update. `shell.json` hot-reloads, so no restart is needed.
+
+**Pin this widget to the exact centre of the bar.** `centerAnchor` names the
+one centre module that sits dead centre, with the others flanking it:
+
+```json
+{
+  "version": 1,
+  "bar": {
+    "centerAnchor": "io.github.mahziyarng98.jalali-calendar",
+    "layout": {
+      "center": [
+        { "id": "io.github.mahziyarng98.jalali-calendar" }
+      ]
+    }
+  }
+}
+```
+
+**Hide the Gregorian clock.** `centerAnchor` only decides placement — on its
+own it does not remove anything. If you want the Jalali date *instead of* the
+built-in clock rather than beside it, disable the clock as well:
+
+```bash
+omarchy plugin disable omarchy.clock
+```
+
+That drops it from the bar layout and leaves the component available, so
+`omarchy plugin enable omarchy.clock` brings it back.
+
+Both steps are optional. Skip them to keep both calendars visible side by
+side — a Gregorian clock and a Jalali date is a reasonable thing to want.
 
 ## Using it
 
 | Where | Action | Result |
 |---|---|---|
-| Bar | left click | open/close the panel |
+| Bar | left click | open / close the panel |
 | Panel | `‹` `›` or scroll wheel | previous / next month |
 | Panel | click a day | pin it to the line under the grid |
 | Panel | hover a holiday | its name, in Finglish |
 | Panel | `Today`, or click the header date | back to the current month |
-| Panel | arrow keys / `hjkl` | move the day cursor, turning the page at month edges |
-| Panel | `[` `]` | previous / next month |
-| Panel | `{` `}` | previous / next year |
-| Panel | `t` | back to today |
-| Panel | `Esc` | close |
 
-It also answers over IPC, which is what you would bind a hotkey to:
+### Keyboard
+
+The panel takes keyboard focus when it opens.
+
+| Key | Action |
+|---|---|
+| `←` `→` / `h` `l` | move the day cursor one day, turning the page at a month edge |
+| `↑` `↓` / `k` `j` | move the day cursor one week |
+| `[` `]` | previous / next month |
+| `{` `}` | previous / next year |
+| `t` | back to today |
+| `Enter` / `Space` | back to today |
+| `Tab` / `Shift-Tab` | move to the next / previous bar panel |
+| `Esc` | close |
+
+### IPC
+
+For a Hyprland keybinding, or any script:
 
 ```bash
 omarchy-shell jalali-calendar toggle
 omarchy-shell jalali-calendar open
 omarchy-shell jalali-calendar close
+omarchy-shell jalali-calendar refresh
 ```
+
+The IPC target is `jalali-calendar` — deliberately shorter than the plugin id,
+so a keybinding stays readable.
 
 ## Configuration
 
-Settings are inline on the widget's entry in `~/.config/omarchy/shell.json`,
-which hot-reloads on save:
+Settings live inline on the widget's entry in `~/.config/omarchy/shell.json`
+and hot-reload on save:
 
 ```json
-{ "id": "local.jalali-calendar", "showYear": true, "showWeekday": false }
+{ "id": "io.github.mahziyarng98.jalali-calendar", "showYear": true, "showWeekday": false }
 ```
 
 | Key | Default | Effect |
@@ -115,25 +170,37 @@ which hot-reloads on save:
 
 ## Holidays
 
-The **solar** holidays — Nowruz, Sizdah Be-dar, Islamic Republic Day, the
-13 Khordad pair, 22 Bahman, 29 Esfand — are fixed dates on this calendar and
-ship complete in `holidays-fixed.js`. They never need maintenance.
+**Solar holidays ship complete** in `holidays-fixed.js`. These are fixed dates
+on the Jalali calendar, so they never drift and never need maintenance:
 
-The **lunar** ones — Eyd-e Fetr, Eyd-e Ghorban, Tasua, Ashura, Arbaeen,
-Eyd-e Ghadir and the rest — follow the Hijri Qamari calendar. They move about
-eleven days earlier each Jalali year and their exact dates depend on the
-official crescent sighting, so they cannot be computed: they have to be
-transcribed per year from an authoritative calendar.
+| Date | Occasion |
+|---|---|
+| 1–4 Farvardin | Nowruz |
+| 12 Farvardin | Islamic Republic Day |
+| 13 Farvardin | Sizdah Be-dar |
+| 14 Khordad | Demise of Imam Khomeini |
+| 15 Khordad | 15 Khordad Uprising |
+| 22 Bahman | Islamic Revolution Victory |
+| 29 Esfand | Oil Industry Nationalization Day |
 
-**`holidays-lunar.json` ships empty on purpose.** A wrong Ashura is worse than
-a visibly missing one, so rather than guessing, the panel says so: while a
-year has no data it prints `Lunar holidays for 1405 not in holidays-lunar.json`
-under the grid, so an empty Moharram reads as missing data rather than as a
-month with nothing in it.
+**`holidays-lunar.json` ships empty, on purpose.** Eyd-e Fetr, Eyd-e Ghorban,
+Tasua, Ashura, Arbaeen, Eyd-e Ghadir and the rest follow the Hijri Qamari
+calendar. They move about eleven days earlier each Jalali year and their exact
+dates depend on the official crescent sighting, so they cannot be computed —
+they have to be transcribed, per year, from an authoritative calendar.
 
-To fill it in, read the official dates off an Iranian calendar for that year —
-the [Institute of Geophysics, University of Tehran](https://calendar.ut.ac.ir/)
-sets the approved one — and add them:
+Second-hand sources disagree with each other often enough that shipping a
+guess would be worse than shipping nothing: a wrong Ashura is worse than a
+visibly missing one. So the panel says so instead. While a year has no data it
+prints `Lunar holidays for 1405 not in holidays-lunar.json` under the grid, so
+an empty Moharram reads as missing data rather than as a month with nothing
+in it.
+
+### Filling it in
+
+Read the official dates off an Iranian calendar for the year — the
+[Institute of Geophysics, University of Tehran](https://calendar.ut.ac.ir/)
+sets the approved one — and add them under `years`:
 
 ```json
 "years": {
@@ -144,10 +211,24 @@ sets the approved one — and add them:
 }
 ```
 
-The file is watched, so saving it updates the open panel — no restart. The
-file's own header carries the full instructions and the checks worth running
-against a transcription; `node test/jalali-date-test.js 1405 3 6` converts a
-Jalali date to Gregorian so you can confirm one landed where you expect.
+`null` means "not filled in yet" and triggers the notice; `[]` means "checked,
+this year has none". The file is watched, so saving it updates an open panel
+with no restart.
+
+Worth checking before you trust a transcription: each holiday should land
+about 10–11 days *earlier* in the Jalali year than it did the year before — a
+jump of roughly a month means a month name was misread, which is the most
+common error. Eyd-e Ghadir is 8 days after Eyd-e Ghorban; Arbaeen is exactly
+40 days after Ashura; Tasua is the day before Ashura. The bundled converter
+will check where a date lands:
+
+```bash
+node test/jalali-date-test.js 1405 3 6
+# Chaharshanbe, 6 Khordad 1405  =  27 May 2026
+```
+
+Pull requests adding a verified year are welcome — please say in the PR which
+calendar you took the dates from.
 
 ## Development
 
@@ -158,17 +239,13 @@ omarchy plugin validate .       # checks the manifest the way the shell does
 
 The date math in `JalaliDate.js` is deliberately Qt-free so the same file runs
 under node and inside QML. The tests round-trip every day of Jalali years
-1300–1500 — 73,414 of them — and check the Nowruz anchors, the 33-year leap
-cycle, and the weekday alignment against dates that can be verified
-independently.
+1300–1500 — 73,414 of them — and check the Nowruz anchors for 1400–1408, the
+33-year leap cycle, and the weekday alignment against dates that can be
+verified independently.
 
 Editing a plugin's **entry point** (`BarWidget.qml`) hot-reloads on save.
-Editing a file it loads behind a `Loader` — `Panel.qml` here — does not always
-take, so apply those with:
-
-```bash
-omarchy restart shell
-```
+Editing a file it pulls in behind a `Loader` — `Panel.qml` here — does not
+reliably take, so apply those with `omarchy restart shell`.
 
 ### Files
 
@@ -184,9 +261,13 @@ omarchy restart shell
 
 ## How the dates are computed
 
-Gregorian ↔ Julian Day Number uses Fliegel and Van Flandern's closed form.
-The Jalali leap rule is Borkowski's: the year is astronomical rather than
-cyclic, so its leap years are described by a table of breaks — years at which
-the spacing changes — with leap years every 4 years inside a break interval
-and an 8-per-33 correction. Both are implemented from their published
-mathematical descriptions rather than ported from an existing library.
+Gregorian ↔ Julian Day Number uses Fliegel and Van Flandern's closed form. The
+Jalali leap rule is Borkowski's: the year is astronomical rather than cyclic,
+so its leap years are described by a table of breaks — years at which the
+spacing changes — with leap years every 4 years inside a break interval and an
+8-per-33 correction. Both are implemented from their published mathematical
+descriptions rather than ported from an existing library.
+
+## License
+
+[MIT](LICENSE) © mahziyarng98

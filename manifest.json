@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "local.jalali-calendar",
+  "id": "io.github.mahziyarng98.jalali-calendar",
   "name": "Jalali Calendar",
   "version": "1.0.0",
-  "author": "",
+  "author": "mahziyarng98",
   "description": "Jalali (Solar Hijri) date in the bar, with a Finglish month calendar and Iranian holidays",
   "kinds": [
     "bar-widget"
