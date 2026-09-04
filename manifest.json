@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "local.jalali-calendar",
+  "name": "Jalali Calendar",
+  "version": "1.0.0",
+  "author": "",
+  "description": "Jalali (Solar Hijri) date in the bar, with a Finglish month calendar and Iranian holidays",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Jalali Calendar",
+    "description": "Jalali (Solar Hijri) date in the bar, with a Finglish month calendar and Iranian holidays",
+    "category": "Time",
+    "defaultSection": "center",
+    "allowMultiple": false,
+    "defaults": {
+      "showYear": false,
+      "showWeekday": false
+    },
+    "schema": [
+      {
+        "key": "showYear",
+        "type": "boolean",
+        "label": "Show year",
+        "description": "Append the Jalali year to the bar label, e.g. \"13 Shahrivar 1405\".",
+        "defaultValue": false
+      },
+      {
+        "key": "showWeekday",
+        "type": "boolean",
+        "label": "Show weekday",
+        "description": "Prefix the bar label with the Finglish weekday, e.g. \"Jome, 13 Shahrivar\".",
+        "defaultValue": false
+      }
+    ]
+  }
+}

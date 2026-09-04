@@ -1,0 +1,49 @@
+{
+  "_what": "Official Iranian holidays that follow the Hijri Qamari (lunar) calendar. Unlike the solar holidays in holidays-fixed.js, these move about 11 days earlier each Jalali year and their exact date depends on the official crescent sighting, so they cannot be computed. They have to be transcribed, per year, from an authoritative calendar.",
+
+  "_status": "NOT POPULATED. Every year below is null, which the plugin reads as 'no data for this year' and reports in the panel as a missing-data notice rather than as 'this month has no religious holidays'. Nothing here is guessed: a wrong Ashura is worse than a visibly absent one.",
+
+  "_todo": [
+    "1. Open an authoritative Iranian calendar for the Jalali year you are filling in.",
+    "2. Read off each official lunar holiday's SOLAR (Jalali) date -- month number 1-12 and day.",
+    "3. Add it to years.<year> as { \"month\": n, \"day\": n, \"name\": \"Finglish name\" }.",
+    "4. Replace the null with the array. Save -- the panel reloads the file live, no restart.",
+    "5. Fill in _source and _retrieved below so the next person knows what this came from."
+  ],
+
+  "_sources": [
+    "Institute of Geophysics, University of Tehran (calendar.ut.ac.ir) -- the body that sets the official Iranian calendar; its annual taghvim is the authority these dates are approved from.",
+    "time.ir -- widely used Iranian calendar, carries the official occasion list per Jalali month.",
+    "Any printed Iranian wall calendar (taghvim-e divari) for the year, which prints the same approved list."
+  ],
+
+  "_verify": [
+    "Cross-check before trusting a transcription. Convert the Jalali date you wrote down back to Gregorian (`node test/jalali-date-test.js 1405 3 6` prints it) and confirm it lands within a day of where the lunar date should fall.",
+    "The lunar year is ~354 days, so each holiday should land ~10-11 days EARLIER in the Jalali year than it did the year before. A jump of about a month means a month name was misread -- that is the most common transcription error, and it is what makes a second-hand web source untrustworthy here.",
+    "Eyd-e Ghadir is 18 Dhu al-Hijjah, 8 days after Eyd-e Ghorban (10 Dhu al-Hijjah). Arbaeen is exactly 40 days after Ashura. Tasua is the day before Ashura. If those spacings do not hold in the dates you wrote down, something is wrong."
+  ],
+
+  "_refresh": "Add years as they are published; a filled year never needs revisiting. With 1404-1408 filled this file is good through roughly Gregorian 2029, after which the panel starts reporting missing data again.",
+
+  "_schema": "years.<jalaliYear>: null (not filled in) | array of { month: 1-12, day: 1-31, name: string }. Names are Finglish, matching the rest of the plugin -- 'Ashura', not 'عاشورا'.",
+
+  "_example_shape_do_not_trust_these_dates": {
+    "1405": [
+      { "month": 1, "day": 1, "name": "Eyd-e Fetr" },
+      { "month": 3, "day": 6, "name": "Eyd-e Ghorban" },
+      { "month": 3, "day": 14, "name": "Eyd-e Ghadir" },
+      { "month": 5, "day": 13, "name": "Arbaeen" }
+    ]
+  },
+
+  "_source": "",
+  "_retrieved": "",
+
+  "years": {
+    "1404": null,
+    "1405": null,
+    "1406": null,
+    "1407": null,
+    "1408": null
+  }
+}
