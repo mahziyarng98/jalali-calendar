@@ -1,18 +1,23 @@
 # Jalali Calendar
 
 An [Omarchy](https://omarchy.org/) shell plugin: the Jalali (Solar Hijri /
-Shamsi) date in your bar, and a month calendar in the panel behind it. Month
-and weekday names are romanized — `Ordibehesht`, not `اردیبهشت` — and the
-numerals are Latin throughout.
+Shamsi) date and a 24-hour clock in your bar, and a month calendar in the
+panel behind it. Month and weekday names are romanized — `Ordibehesht`, not
+`اردیبهشت` — and the numerals are Latin throughout.
 
 ![The Jalali Calendar panel](preview.png)
 
 ## Features
 
-- **Bar widget** — day number and Finglish month, e.g. `13 Shahrivar`. Rolls
-  over at local midnight on its own.
+- **Bar widget** — day number and Finglish month with the time beside it,
+  e.g. `13 Shahrivar 14:32`. Rolls over at local midnight on its own.
+- **Live 24-hour clock** — `HH:mm`, no AM/PM, on the bar and again in the
+  panel. It ticks on the minute whether or not the panel has been opened, and
+  reads the system clock in local time, so a timezone change follows the
+  machine with nothing to configure. On a vertical bar the hour and the
+  minute stack under the date.
 - **Panel** — a month grid behind one click, with the full date in Finglish
-  above it: `Jome, 13 Shahrivar 1405`.
+  above it and the clock under that: `Jome, 13 Shahrivar 1405` over `14:32`.
 - **Saturday-first grid** on the Iranian week — `Shanbe, Yekshanbe, Doshanbe,
   Seshanbe, Chaharshanbe, Panjshanbe, Jome` — always six rows, so the panel
   never changes height as you step through months.
@@ -76,8 +81,10 @@ omarchy plugin disable io.github.mahziyarng98.jalali-calendar
 ## Replacing the built-in clock
 
 Installing this plugin **adds** a widget; Omarchy's own Gregorian clock stays
-in the bar alongside it. Two independent settings control what you end up
-with, and you may want either, both, or neither.
+in the bar alongside it. Since this widget tells the time too, what the
+built-in clock still adds is the Gregorian date — so running both is a choice
+rather than the default it looks like. Two independent settings control what
+you end up with, and you may want either, both, or neither.
 
 Everything below edits `~/.config/omarchy/shell.json` — **your own settings
 file**, not plugin or shell source. That matters: it survives `omarchy update`,
@@ -254,7 +261,7 @@ reliably take, so apply those with `omarchy restart shell`.
 | `manifest.json` | plugin declaration and the bar-widget settings schema |
 | `BarWidget.qml` | the bar label, and the host for the panel |
 | `Panel.qml` | the calendar panel |
-| `JalaliDate.js` | Gregorian ↔ Jalali conversion, name tables, grid builder |
+| `JalaliDate.js` | Gregorian ↔ Jalali conversion, name tables, grid builder, clock labels |
 | `holidays-fixed.js` | the ten fixed solar holidays |
 | `holidays-lunar.json` | per-year lunar holidays — hand-maintained, see above |
 | `test/jalali-date-test.js` | conversion checks, and a date-conversion CLI |

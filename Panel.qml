@@ -29,11 +29,19 @@ Panel {
   property var hostWidget: null
   readonly property var barIdentity: hostWidget || root
 
-  // ---- Today. SystemClock keeps this honest across midnight so the ring
-  //      rolls over without the panel being reopened.
+  // ---- Today, and the minute. `today` moves once a day and is what the
+  //      grid is built from; `now` moves every minute and is only ever read
+  //      by the clock line under the hero. Keeping them apart is what stops
+  //      a minute tick from rebuilding the month grid sixty times an hour.
+  //      SystemClock keeps both honest without the panel being reopened.
   property date today: new Date()
+  property date now: new Date()
   readonly property var todayDate: Jalali.fromDate(today)
   readonly property string todayKey: Jalali.keyFor(todayDate.jy, todayDate.jm, todayDate.jd)
+
+  // 24-hour, no meridiem, local -- the same label the bar shows, from the
+  // same helper, so the two never read a minute apart.
+  readonly property string timeText: Jalali.timeLabel(now)
 
   // ---- The month on screen, and the month it is on its way to. The two are
   //      only ever apart for the ~180ms of a page turn; keeping the
@@ -168,6 +176,7 @@ Panel {
 
   function refresh() {
     root.today = new Date()
+    root.now = root.today
     root.cursorDate = null
     root.hoverDate = null
     root.goToToday()
@@ -240,6 +249,9 @@ Panel {
     id: clock
     precision: SystemClock.Minutes
     onDateChanged: {
+      // Every tick moves the clock line; only a tick that lands on a new day
+      // moves the calendar under it.
+      root.now = clock.date
       var next = Jalali.fromDate(clock.date)
       if (Jalali.keyFor(next.jy, next.jm, next.jd) === root.todayKey) return
       var followToday = root.viewingCurrentMonth
@@ -320,30 +332,55 @@ Panel {
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: Style.space(10)
 
-        // ---- Hero: today in full Finglish. Once the view has stepped away
-        //      it is also the way back -- clicking the date you are looking
-        //      for beats hunting for a control.
+        // ---- Hero: today in full Finglish, with the clock under it. Once
+        //      the view has stepped away the date is also the way back --
+        //      clicking the date you are looking for beats hunting for a
+        //      control.
         Item {
           width: gridColumn.width
-          height: heroText.implicitHeight
+          height: heroColumn.implicitHeight
 
-          Text {
-            id: heroText
-            textFormat: Text.PlainText
+          Column {
+            id: heroColumn
             anchors.horizontalCenter: parent.horizontalCenter
-            text: Jalali.longLabel(root.todayDate.jy, root.todayDate.jm, root.todayDate.jd)
-            color: heroMouse.containsMouse ? root.accentInk : root.ink
-            font.family: root.contentFontFamily
-            font.pixelSize: Style.font.title
-            font.bold: true
+            spacing: Style.space(2)
 
-            Behavior on color { ColorAnimation { duration: 90 } }
+            Text {
+              id: heroText
+              textFormat: Text.PlainText
+              anchors.horizontalCenter: parent.horizontalCenter
+              text: Jalali.longLabel(root.todayDate.jy, root.todayDate.jm, root.todayDate.jd)
+              color: heroMouse.containsMouse ? root.accentInk : root.ink
+              font.family: root.contentFontFamily
+              font.pixelSize: Style.font.title
+              font.bold: true
+
+              Behavior on color { ColorAnimation { duration: 90 } }
+            }
+
+            // The clock the bar has no room for. It takes its prominence from
+            // size and keeps it quiet in tone, so the panel still opens on
+            // the date -- which is the bold line, and the only one you can
+            // click -- with the time reading underneath it.
+            Text {
+              textFormat: Text.PlainText
+              anchors.horizontalCenter: parent.horizontalCenter
+              text: root.timeText
+              color: root.muted
+              font.family: root.contentFontFamily
+              font.pixelSize: Style.font.display
+              // Tabular figures, so the digits sit still under the date
+              // rather than shuffling the line every minute.
+              font.features: ({ "tnum": 1 })
+            }
           }
 
+          // Bound to the date alone: "Back to today" belongs to the date, and
+          // a clock that reacts to the pointer would be asking to be clicked.
           MouseArea {
             id: heroMouse
-            x: heroText.x
-            y: heroText.y
+            x: heroColumn.x + heroText.x
+            y: heroColumn.y + heroText.y
             width: heroText.width
             height: heroText.height
             enabled: !root.viewingCurrentMonth

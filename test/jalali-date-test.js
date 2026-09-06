@@ -83,5 +83,13 @@ check("Jome is the last column", grid[0].days[6].weekend, true)
 check("step past Esfand", J.stepMonth(1404, 12, 1), { jy: 1405, jm: 1 })
 check("step back past Farvardin", J.stepMonth(1405, 1, -1), { jy: 1404, jm: 12 })
 
+console.log("Clock labels")
+// Built from local parts, so these assert the local wall clock rather than UTC.
+var morning = new Date(2026, 8, 6, 9, 5, 0)
+check("zero-padded on both halves", J.timeLabel(morning), "09:05")
+check("24-hour, no meridiem", J.timeLabel(new Date(2026, 8, 6, 23, 59, 0)), "23:59")
+check("midnight is 00:00, not 24:00", J.timeLabel(new Date(2026, 8, 6, 0, 0, 0)), "00:00")
+check("the halves the vertical bar stacks", [J.hourLabel(morning), J.minuteLabel(morning)], ["09", "05"])
+
 console.log(failures === 0 ? "\nAll checks passed." : "\n" + failures + " check(s) failed.")
 process.exit(failures === 0 ? 0 : 1)

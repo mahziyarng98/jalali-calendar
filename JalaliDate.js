@@ -218,6 +218,27 @@ function gregorianLabel(gy, gm, gd) {
   return gd + " " + GREGORIAN_MONTHS[gm - 1] + " " + gy
 }
 
+// --- clock ----------------------------------------------------------------
+
+// The time of day the bar and the panel both show. 24-hour and zero-padded,
+// read straight off the JS Date the system clock hands over, so it is local
+// time on whatever zone the machine is set to -- there is no zone of our own
+// anywhere in here to get it wrong.
+//
+// The bar splits the two halves onto separate lines when it is vertical,
+// which is why the parts are exposed as well as the joined label.
+function pad2(n) {
+  return (n < 10 ? "0" : "") + n
+}
+
+function hourLabel(date) { return pad2(date.getHours()) }
+function minuteLabel(date) { return pad2(date.getMinutes()) }
+
+// "14:32" -- what the bar and the panel clock read.
+function timeLabel(date) {
+  return hourLabel(date) + ":" + minuteLabel(date)
+}
+
 // --- month stepping and grid ---------------------------------------------
 
 function stepMonth(jy, jm, delta) {
@@ -279,6 +300,7 @@ if (typeof module !== "undefined" && module.exports) {
     weekdayOf: weekdayOf, keyFor: keyFor, shortLabel: shortLabel,
     longLabel: longLabel, gregorianLabel: gregorianLabel,
     stepMonth: stepMonth, monthGrid: monthGrid, isSupported: isSupported,
-    jalaliToJdn: jalaliToJdn, gregorianToJdn: gregorianToJdn
+    jalaliToJdn: jalaliToJdn, gregorianToJdn: gregorianToJdn,
+    hourLabel: hourLabel, minuteLabel: minuteLabel, timeLabel: timeLabel
   }
 }
